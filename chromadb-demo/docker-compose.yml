@@ -1,0 +1,28 @@
+services:
+  server:
+    # If the docker rate limiter is applied while pulling images
+    # use the commented image line instead of the one below
+    #image: ghcr.io/chroma-core/chroma:latest
+    image: chromadb/chroma:latest
+    environment:
+      - IS_PERSISTENT=TRUE
+    volumes:
+      - chroma-data:/chroma/chroma/
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - net
+
+volumes:
+  chroma-data:
+    driver: local
+
+networks:
+  net:
+    driver: bridge

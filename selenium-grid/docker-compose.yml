@@ -1,0 +1,46 @@
+services:
+  chrome:
+    image: selenium/node-chrome:dev
+    platform: linux/amd64
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+  node-docker:
+    image: selenium/node-docker
+    platform: linux/amd64
+    volumes:
+      - ./assets:/opt/selenium/assets #For video recordings
+      - ./configs/config.toml:/opt/bin/config.toml #Mount configuration file
+      - /var/run/docker.sock:/var/run/docker.sock #Grid to run docker commands
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    shm_size: 2gb #Increase shm_size to prevent memory problems
+
+  chrome_video:
+    image: selenium/video:ffmpeg-6.1.1-20240621
+    platform: linux/amd64
+    volumes:
+      - /tmp/videos:/videos
+    depends_on:
+      - chrome
+    environment:
+      - DISPLAY_CONTAINER_NAME=chrome
+      - FILE_NAME=chrome_video.mp4
+
+  selenium-hub:
+    image: selenium/hub:latest
+    platform: linux/amd64
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"

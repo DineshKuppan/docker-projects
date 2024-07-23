@@ -1,0 +1,23 @@
+# Python
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.swp
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+virtualenv/
+
+# Test outputs
+*.log
+*.out
+*.txt
+
+# IDE files
+.idea/
+.vscode/
+
+.DS_Store
